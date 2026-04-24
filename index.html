@@ -1,177 +1,115 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Iglesia Oasis Fuente De Amor</title>
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Lato&display=swap" rel="stylesheet">
-        <style>
- body {
-    font-family: 'Lato', Arial;
-    background-color: white;
-    margin: 0;
-    padding: 0;
- }
- h1, h2{
-    font-family: 'Playfair Display', serif;
- }
- header{
-    background-color: #c8a951;
-    color: white;
-    padding: 20px;
- }
- nav a {
-    color: white;
-    margin-right: 15px;
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iglesia Oasis Fuente De Amor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Lato&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> 
+</head>
+<body>
+<header>
+    <h1>Iglesia Oasis Fuente De Amor</h1>
+    <nav>
+        <a href="#bienvenida">Bienvenida</a>
+        <a href="#quienes">¿Quiénes somos?</a>
+        <a href="#horarios">Horarios</a>
+        <a href="#galeria">Galería</a>
+        <a href="#contacto">Contacto</a>
+    </nav>
+</header>
 
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 2px solid white;
- }
+<main>
 
- nav a:hover{
-    background-color: white;
-    color: #c8a951
- }
-/*SECCIONES*/
+<!-- HERO -->
+<section class="hero">
+    <h2>Bienvenido a Oasis Fuente De Amor</h2>
+    <p>Un lugar para crecer en fe</p>
+</section>
 
- section {
-    padding: 40px;
-    border-bottom: 2px solid #c8a951;
- }
+<!-- BIENVENIDA -->
+<section id="bienvenida">
+    <h2>Bienvenidos</h2>
+    <p>Hola, esta es nuestra página oficial de la Iglesia Oasis Fuente De Amor.</p>
 
- h2 {
-    color: #c8a951;
- }
+    <div class="versiculo">
+        <p>Porque de tal manera amó Dios al mundo, que dio a su Hijo unigénito, para que todo aquel que en Él cree no se pierda, sino que tenga vida eterna.</p>
+        <p>Juan 3:16</p>
+    </div>
+</section>
 
+<!-- QUIENES SOMOS -->
+<section id="quienes">
+    <h2>¿Quiénes somos?</h2>
+    <p>Somos una iglesia misionera cuya sede principal se encuentra en Estados Unidos. En Manta, Ecuador, contamos con dos iglesias ubicadas en distintos sectores.</p>
+</section>
 
- table {
-    border-collapse: collapse;
-    width: 50%;
- }
+<!-- HORARIOS -->
+<section id="horarios">
+    <h2>Horarios de culto</h2>
 
- th, td {
-    border: 1px solid #c8a951;
-    padding: 10px;
-}
+    <table>
+        <tr>
+            <th>Día</th>
+            <th>Tipo</th>
+            <th>Hora</th>
+        </tr>
+        <tr>
+            <td>Miércoles</td>
+            <td>Intercesión</td>
+            <td>7:30 AM</td>
+        </tr>
+        <tr>
+            <td>Viernes</td>
+            <td>Adoración e intercesión</td>
+            <td>7:30 PM</td>
+        </tr>
+        <tr>
+            <td>Domingo</td>
+            <td>Familiar</td>
+            <td>9:00 AM</td>
+        </tr>
+    </table>
+</section>
 
-th {
-    background-color: #c8a951;
-    color:white
-}
-footer{
-    background-color: #c8a951;
-    color:white;
-    text-align: center;
-    padding:20px;
-}
-main {
-     max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-.versiculo {
-    background-color: #c8a951;
-    color:white;
-    text-align: center;
-    padding: 30px;
-    border-radius: 10px;
-    margin-top: 20px;
-    font-style: italic;
-    font-size: 18px;    
-}
+<!-- GALERIA -->
+<section id="galeria">
+    <h2>Galería</h2>
 
- </style>
-    </head>
-    <body>
-        <header>
-            <h1> Iglesia Oasis Fuente De Amor</h1>
-            <nav>
-            <a href="#bienvenida">Bienvenida</a>
-            <a href="#quienes">Quienes somos?</a>
-            <a href="#horarios">Horaríos</a>
-            <a href="#galeria">Galeía</a>
-            <a href="#contactos">Contacto</a>
-            </nav>
-        </header>
-        <main>
-        <!--BIENVENIDA-->
-        <section id="bienvenida">
-            <h2>Bienvenidos</h2>
-            <p>Hola esta es nuestra pagina oficial de la Iglesia
-                Oasis Fuente De Amor!
-            </p>
-            <div class="versiculo">
-                <p>Porque de tal manera amó Dios al mundo, que dio su hijo unigenito, para que todo aquel que en él crea no se pierda, mas tenga vida eterna.</p>
-                <p> Juan 3:16</p>
-            </div>
-        </section>
+    <div>
+        <img src="img2.jpg" alt="Culto dominical">
+        <p>Culto dominical</p>
+    </div>
 
-        <!--QUIENES SOMOS?-->
-        <section id="quienes"> 
-            <h2>Quienes somos?</h2>
-            <p>La iglesia tiene una historia algo interesante 
-                somos una iglesia misionera. la iglesia principal
-                se encuentra en estados unidos, aqui en manta ecuador 
-                hay dos iglsias una ubicada en circunavalación y otra ubicada ...... </p>
-        </section>
+    <div>
+        <img src="img1.jpeg" alt="Culto de jóvenes">
+        <p>Culto de jóvenes</p>
+    </div>
 
-        <!--HORARIOS-->
-        <section id="horarios">
-            <h2>Horarios de culto </h2>
-            <table>
-                <tr>
-                    <th>Día</th>
-                    <th>Tipo de cultos</th>
-                    <th>Hora</th>
-                </tr>
-                <tr>
-                    <td> Miercoles</td>
-                    <td>Intercesión</td>
-                    <td>7:30 am</td>
-                    
-                </tr>
-                    <tr>
-                        <td>Viernes</td>
-                        <td>Adoración e intercesión</td>
-                        <td> 7:30 pm</td>
-                    </tr>
-                    <tr>
-                        <td>Domingo</td>
-                        <td>Familiar </td>
-                        <td>9:00 am</td>
-                    </tr>
-            </table>
-        </section>
+</section>
 
-        <!--GALERIA-->
-        <section id="galeria">
-            <h2>Galería</h2>
+<!-- CONTACTO -->
+<section id="contacto">
+    <h2>Contacto</h2>
+    <p>Dirección: Circunvalación, Manta, Ecuador</p>
+    <p>Teléfono: 0985979027</p>
+    <p>Email: iglesiaoasis@gmail.com</p>
+</section>
 
-            <div>
-                <img src="img2.jpg" alt="Culto dominical">
-                <p>Culto dominical</p>    
-            </div>
+</main>
 
-            <div>
-                <img src="img1.jpeg" alt="Culto de jovenes">
-                <p>Culto de jóvenes</p>
-            </div>
+<footer>
+    <p>2025 Iglesia Oasis Fuente De Amor - Manta, Ecuador</p>
+</footer>
 
-        </section>
+<script>
+    window.onload = () => window.scrollTo(0, 0);
+    </script>
 
-
-        <!--CONTACTO-->
-        <section id="contactos">
-            <h2>Contacto</h2>
-            <address>
-                <p>Dirección. Circunvalación, Manta, Ecuador</p>
-                <p> Telefono: 0985979027</p>
-                <p>Email: iglesiaoasis@gmail.com</p>
-            </address>
-        </section>
-        </main>
-        <footer>
-            <p> 2025 Iglesia Oasis Fuente De Amor - Manta, Ecuador</p>
-        </footer>
-    </body>
-</html>   
+<!-- BOTON WHATSAPP -->
+<a href="https://wa.me/593985979027" target="_blank"
+style="position:fixed; bottom:20px; right:20px; background:#25D366; color:white; padding:15px; border-radius:50%;">
+💬
+</a>
+</body>
+</html>
