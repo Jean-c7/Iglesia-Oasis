@@ -82,7 +82,7 @@
     </div>
 
     <div class="hero-scroll">
-      <span>Descubrir</span>
+      <span></span>
       <div class="hero-scroll-line"></div>
     </div>
 
@@ -189,17 +189,26 @@
         <div class="schedule-card reveal reveal-delay-1">
           <div class="schedule-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
           <div class="schedule-day">Miércoles</div>
-          <div class="schedule-name">Noche de Poder</div>
+          <div class="schedule-name">Culto General</div>
           <div class="schedule-time">7:30 PM</div>
-          <div class="schedule-note">Estudio bíblico · Intercesión</div>
+          <div class="schedule-note">Adoración</div>
         </div>
+        <div class="schedule-card reveal reveal-delay-1">
+          <div class="schedule-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+          <div class="schedule-day">Jueves</div>
+          <div class="schedule-name">Clase Bíblica General</div>
+          <div class="schedule-time">7:30 PM</div>
+          <div class="schedule-note">Estudio Bíblico</div>
+        </div>
+
         <div class="schedule-card reveal reveal-delay-2">
           <div class="schedule-icon"><svg viewBox="0 0 24 24"><path d="M21 6.5l-4-4-9 9-2.5 5.5 5.5-2.5 9-9-1 1zM6.91 14.09L5.5 18.5l4.41-1.41L6.91 14.09z"/></svg></div>
           <div class="schedule-day">Viernes</div>
-          <div class="schedule-name">Servicio Semanal</div>
+          <div class="schedule-name">Culto General</div>
           <div class="schedule-time">7:30 PM</div>
-          <div class="schedule-note">Alabanza · Palabra · Oración</div>
+          <div class="schedule-note">Intercesión</div>
         </div>
+
         <div class="schedule-card featured reveal reveal-delay-3">
           <div class="schedule-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
           <div class="schedule-day">Sábado</div>
@@ -207,13 +216,17 @@
           <div class="schedule-time">6:00 PM</div>
           <div class="schedule-note">Jóvenes · Música · Propósito</div>
         </div>
-        <div class="schedule-card reveal reveal-delay-4">
+
+        <div class="schedule-card schedule-card--sunday reveal reveal-delay-4">
           <div class="schedule-icon"><svg viewBox="0 0 24 24"><path d="M12 3C6.48 3 2 7.48 2 13s4.48 10 10 10 10-4.48 10-10S17.52 3 12 3zm1 15h-2v-6h2v6zm0-8h-2V8h2v2z"/></svg></div>
-          <div class="schedule-day">Domingo</div>
-          <div class="schedule-name">Servicio General</div>
+          <div class="schedule-body">
+            <div class="schedule-day">Domingo</div>
+            <div class="schedule-name">Servicio General</div>
+            <div class="schedule-note">Adoración · Celebración · Familia</div>
+          </div>
           <div class="schedule-time">9:00 AM</div>
-          <div class="schedule-note">Adoración · Ministerio · Familia</div>
         </div>
+
       </div>
     </div>
   </section>
@@ -356,6 +369,7 @@
           <h4>Horarios</h4>
           <ul>
             <li><a href="#">Mié. 7:30 PM</a></li>
+            <li><a href="#">Jue. 7:30 PM</a></li>
             <li><a href="#">Vie. 7:30 PM</a></li>
             <li><a href="#">Sáb. 6:00 PM — Jóvenes</a></li>
             <li><a href="#">Dom. 9:00 AM</a></li>
@@ -381,43 +395,5 @@
   </div>
 
   <script src="script.js"></script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
