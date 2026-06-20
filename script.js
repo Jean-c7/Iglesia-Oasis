@@ -82,6 +82,14 @@ function validateEmail(email) {
 async function handleFormSubmit() {
   if (isSubmitting) return;
 
+  // Honeypot anti-spam: campo invisible para humanos, visible para bots.
+  // Si tiene contenido, es un bot rellenando el formulario automáticamente.
+  // Salimos en silencio, sin mostrar error ni avisar que fue detectado.
+  const honeypotField = document.getElementById('website');
+  if (honeypotField && honeypotField.value) {
+    return;
+  }
+
   const now = Date.now();
 
   if (now - lastSubmission < 15000) {

@@ -862,7 +862,7 @@
       color: var(--blue);
       margin-bottom: 2px;
     }
-    .info-detail span { font-size: .9rem; color: var(--navy); }
+    .info-detail span { font-size: .9rem; color: var(--charcoal); }
 
     /* Formulario */
     .contact-form {
@@ -910,6 +910,29 @@
       background: var(--white);
     }
     .form-group textarea { resize: vertical; min-height: 118px; }
+
+    /* appearance: none quita el estilo nativo del <select> (incluido su
+       fondo, que algunos navegadores pintan en blanco ignorando nuestro
+       CSS); así garantizamos que el fondo y color que definimos siempre
+       se respeten, sin importar el modo claro/oscuro del sistema */
+    .form-group select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    /* Las <option> del desplegable las pinta el sistema operativo, no
+       el navegador en sí; fijamos su color para que sigan siendo
+       legibles aunque el sistema esté en modo oscuro */
+    .form-group select option {
+      color: var(--charcoal);
+      background: var(--white);
+    }
 
     /* ── Botón enviar con estado de carga ── */
     .btn-form {
@@ -1209,15 +1232,25 @@
     /* SOPORTE PARA MODO OSCURO DEL SISTEMA */
     @media (prefers-color-scheme: dark) {
       body { background: #1a1a1a; color: #f0f0f0; }
-      #bienvenida, #quienes, #galeria { background: #1a1a1a; }
+      #bienvenida, #quienes, #galeria, #contacto { background: #1a1a1a; }
       .section-title { color: #f5f5f5; }
       .verse-text { color: #f0f0f0; }
       .verse-block { background: #20304a; }
       .form-group input, .form-group textarea, .form-group select { background: #2a2a2a; color: #f0f0f0; border-color: #444; }
+      /* Al enfocar un campo, nuestro CSS base fuerza el fondo a blanco;
+         por eso el texto debe volver a oscuro en ese estado, o quedaría
+         invisible sobre el fondo blanco */
+      .form-group input:focus, .form-group textarea:focus, .form-group select:focus { color: #1C1C1C; }
+      /* Las opciones del desplegable se mantienen en claro porque el
+         sistema operativo controla su fondo, no nuestro CSS */
+      .form-group select option { background: #fff; color: #1C1C1C; }
       .contact-form { background: #242424; }
       .value-card { background: #1f1f1f; border-color: rgba(255,255,255,.1); }
       .value-card h3 { color: #f5f5f5; }
+      .contacto-info-title { color: #f5f5f5; }
+      .contacto-info-desc { color: rgba(255,255,255,.6); }
       .info-detail span { color: #f0f0f0; }
+      .form-group label { color: rgba(255,255,255,.5); }
     }
 
     /* PANTALLAS TÁCTILES - Mejorar espacios para dedos */
