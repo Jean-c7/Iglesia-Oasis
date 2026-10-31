@@ -1879,3 +1879,23 @@ body { font-family: var(--font-body); color: #243244; line-height: 1.65; letter-
   .success-toast { left: 12px; right: 12px; width: auto; transform: translateY(-10px); }
   .success-toast.is-visible { transform: translateY(0); }
 }
+/* Footer compacto para pantallas móviles */
+@media (max-width: 600px) {
+  #footer { padding: 44px 0 22px; }
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 30px;
+    margin-bottom: 30px;
+  }
+  .footer-brand { grid-column: 1 / -1; }
+  .footer-brand p { max-width: 52ch; margin-top: 12px; line-height: 1.65; }
+  .footer-socials { margin-top: 16px; }
+  .footer-col h4 { margin-bottom: 12px; }
+  .footer-col ul li { margin-bottom: 8px; }
+  .footer-col ul li a { line-height: 1.45; }
+  .footer-col:last-child { grid-column: 1 / -1; }
+  .footer-col:last-child ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+  .footer-bottom { padding-top: 18px; }
+  .footer-bottom p { line-height: 1.5; }
+}
