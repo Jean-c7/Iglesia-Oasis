@@ -3,7 +3,11 @@
 const CONTACT_EMAIL = 'oasisfuentedeamor@gmail.com';
 const EMAILJS_SERVICE_ID = 'oasis_service';
 const EMAILJS_TEMPLATE_ID = 'template_mldwmkr';
-const EMAILJS_PUBLIC_KEY = 'nAMwUhvZ_ZaSDhOg';
+const EMAILJS_PUBLIC_KEY = 'nAMwUhvZ_ZaSDhOgP';
+
+if (window.emailjs?.init) {
+  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
 
 const header = document.getElementById('header');
 const fabTop = document.getElementById('fabTop');
@@ -11,7 +15,24 @@ const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
+const formEmailFallback = document.getElementById('formEmailFallback');
 const submitButton = document.getElementById('btnEnviar');
+const themeToggle = document.getElementById('themeToggle');
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+function syncThemeControl() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  themeToggle?.setAttribute('aria-pressed', String(dark));
+  themeToggle?.setAttribute('aria-label', dark ? 'Activar modo claro' : 'Activar modo oscuro');
+  themeToggle?.setAttribute('title', dark ? 'Activar modo claro' : 'Activar modo oscuro');
+  themeColorMeta?.setAttribute('content', dark ? '#0f1722' : '#f5f7fa');
+}
+syncThemeControl();
+themeToggle?.addEventListener('click', () => {
+  const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = nextTheme;
+  try { localStorage.setItem('oasis-theme', nextTheme); } catch { /* El tema sigue activo durante esta visita. */ }
+  syncThemeControl();
+});
 
 function setMenuOpen(open) {
   if (!hamburger || !mobileMenu) return;
@@ -59,12 +80,62 @@ if ('IntersectionObserver' in window) {
   revealElements.forEach(element => element.classList.add('visible'));
 }
 
-function showStatus(message, type) {
+function showStatus(message, type, detail = '') {
   if (!formStatus) return;
-  formStatus.textContent = message;
+  formStatus.replaceChildren();
+  formStatus.className = 'form-status';
+  if (!message || !type) return;
+
+  const icon = document.createElement('span');
+  icon.className = 'form-status-icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = type === 'success' ? '✓' : '!';
+
+  const content = document.createElement('span');
+  content.className = 'form-status-content';
+  const title = document.createElement('strong');
+  title.className = 'form-status-title';
+  title.textContent = type === 'success' ? message : 'No se pudo enviar';
+  const description = document.createElement('span');
+  description.className = 'form-status-message';
+  description.textContent = type === 'success'
+    ? (detail || 'Gracias por escribirnos. Nos pondremos en contacto contigo pronto❤️ .')
+    : message;
+  content.append(title, description);
+  formStatus.append(icon, content);
   formStatus.className = `form-status visible ${type}`;
 }
 
+let successToastTimer;
+function showSuccessToast(titleText, detailText) {
+  document.querySelector('.success-toast')?.remove();
+  window.clearTimeout(successToastTimer);
+
+  const toast = document.createElement('div');
+  toast.className = 'success-toast';
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
+  toast.setAttribute('aria-atomic', 'true');
+
+  const icon = document.createElement('span');
+  icon.className = 'success-toast-icon';
+  icon.textContent = '✓';
+  const copy = document.createElement('span');
+  copy.className = 'success-toast-copy';
+  const title = document.createElement('strong');
+  title.textContent = titleText;
+  const detail = document.createElement('span');
+  detail.textContent = detailText;
+  copy.append(title, detail);
+  toast.append(icon, copy);
+  document.body.append(toast);
+  requestAnimationFrame(() => toast.classList.add('is-visible'));
+
+  successToastTimer = window.setTimeout(() => {
+    toast.classList.remove('is-visible');
+    window.setTimeout(() => toast.remove(), 220);
+  }, 6500);
+}
 function setSubmitting(isSubmitting) {
   if (!submitButton) return;
   submitButton.disabled = isSubmitting;
@@ -72,14 +143,14 @@ function setSubmitting(isSubmitting) {
   submitButton.setAttribute('aria-busy', String(isSubmitting));
 }
 
-function openEmailDraft(fields) {
+function createEmailDraftUrl(fields) {
   const subject = encodeURIComponent(`Mensaje desde la web - ${fields.motivo}`);
   const body = encodeURIComponent(
     `Nombre: ${fields.nombre} ${fields.apellido}\n` +
     `Correo: ${fields.email}\n` +
     `Motivo: ${fields.motivo}\n\n${fields.mensaje}`
   );
-  window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+  return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
 }
 
 let lastSubmission = 0;
@@ -118,18 +189,28 @@ contactForm?.addEventListener('submit', async event => {
   isSubmitting = true;
   setSubmitting(true);
   showStatus('', '');
+  if (formEmailFallback) formEmailFallback.hidden = true;
   try {
     if (!window.emailjs?.send) throw new Error('El servicio de correo no está disponible.');
     await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       ...fields,
       reply_to: fields.email
-    }, { publicKey: EMAILJS_PUBLIC_KEY });
+    });
     lastSubmission = Date.now();
     contactForm.reset();
-    showStatus('¡Mensaje enviado! Nos contactaremos pronto. 🙏', 'success');
-  } catch {
-    showStatus('No se pudo enviar automáticamente. Se abrirá un correo para que puedas enviarnos tu mensaje.', 'error');
-    openEmailDraft(fields);
+    showStatus('', '');
+    showSuccessToast('¡Mensaje enviado!', 'Nos pondremos en contacto contigo pronto.');
+  } catch (error) {
+    const errorText = error?.text || error?.message || '';
+    console.error('EmailJS send failed', { status: error?.status, message: errorText });
+    const statusMessage = /public key is invalid/i.test(errorText)
+      ? 'La clave pública de EmailJS no es válida. Actualízala para reactivar el envío automático.'
+      : 'No se pudo enviar automáticamente. Puedes escribirnos directamente por correo.';
+    showStatus(statusMessage, 'error');
+    if (formEmailFallback) {
+      formEmailFallback.href = createEmailDraftUrl(fields);
+      formEmailFallback.hidden = false;
+    }
   } finally {
     isSubmitting = false;
     setSubmitting(false);
