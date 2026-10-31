@@ -1,220 +1,137 @@
-emailjs.init('nAMwUhvZ_ZaSDhOg');
+'use strict';
+
+const CONTACT_EMAIL = 'oasisfuentedeamor@gmail.com';
+const EMAILJS_SERVICE_ID = 'oasis_service';
+const EMAILJS_TEMPLATE_ID = 'template_mldwmkr';
+const EMAILJS_PUBLIC_KEY = 'nAMwUhvZ_ZaSDhOg';
 
 const header = document.getElementById('header');
 const fabTop = document.getElementById('fabTop');
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
+const contactForm = document.getElementById('contactForm');
+const formStatus = document.getElementById('formStatus');
+const submitButton = document.getElementById('btnEnviar');
 
-// Optimizar scroll events con throttle para mejor performance en móvil
-let scrollTimeout;
-let lastScrollTime = 0;
+function setMenuOpen(open) {
+  if (!hamburger || !mobileMenu) return;
+  hamburger.classList.toggle('active', open);
+  mobileMenu.classList.toggle('open', open);
+  hamburger.setAttribute('aria-expanded', String(open));
+  hamburger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+}
 
+hamburger?.addEventListener('click', () => {
+  setMenuOpen(hamburger.getAttribute('aria-expanded') !== 'true');
+});
+
+mobileMenu?.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => setMenuOpen(false));
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') setMenuOpen(false);
+});
+
+let scrollQueued = false;
 window.addEventListener('scroll', () => {
-  const now = Date.now();
-  
-  if (now - lastScrollTime > 16) { // ~60fps
-    header.classList.toggle('scrolled', window.scrollY > 60);
-    if (fabTop) {
-      fabTop.classList.toggle('visible', window.scrollY > 400);
-    }
-    
-    // Parallax effect solo en dispositivos con buen rendimiento
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const heroBg = document.querySelector('.hero-bg');
-      if (heroBg && window.scrollY < window.innerHeight) {
-        heroBg.style.transform = `translateY(${window.scrollY * 0.28}px)`;
-      }
-    }
-    
-    lastScrollTime = now;
-  }
+  if (scrollQueued) return;
+  scrollQueued = true;
+  window.requestAnimationFrame(() => {
+    header?.classList.toggle('scrolled', window.scrollY > 60);
+    fabTop?.classList.toggle('visible', window.scrollY > 400);
+    scrollQueued = false;
+  });
 }, { passive: true });
 
-// Menú hamburguesa
-if (hamburger) {
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    mobileMenu.classList.toggle('open');
-  });
-}
-
-if (mobileMenu) {
-  mobileMenu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('active');
-      mobileMenu.classList.remove('open');
-    });
-  });
-}
-
-// Intersection Observer para reveal animations
-document.querySelectorAll('.reveal').forEach(el => {
-  new IntersectionObserver(entries => {
+const revealElements = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+  const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
       }
     });
-  }, {
-    threshold: 0.1
-  }).observe(el);
-});
+  }, { threshold: 0.1 });
+  revealElements.forEach(element => revealObserver.observe(element));
+} else {
+  revealElements.forEach(element => element.classList.add('visible'));
+}
+
+function showStatus(message, type) {
+  if (!formStatus) return;
+  formStatus.textContent = message;
+  formStatus.className = `form-status visible ${type}`;
+}
+
+function setSubmitting(isSubmitting) {
+  if (!submitButton) return;
+  submitButton.disabled = isSubmitting;
+  submitButton.classList.toggle('loading', isSubmitting);
+  submitButton.setAttribute('aria-busy', String(isSubmitting));
+}
+
+function openEmailDraft(fields) {
+  const subject = encodeURIComponent(`Mensaje desde la web - ${fields.motivo}`);
+  const body = encodeURIComponent(
+    `Nombre: ${fields.nombre} ${fields.apellido}\n` +
+    `Correo: ${fields.email}\n` +
+    `Motivo: ${fields.motivo}\n\n${fields.mensaje}`
+  );
+  window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+}
 
 let lastSubmission = 0;
 let isSubmitting = false;
-
-function sanitizeInput(value) {
-  return value
-    .replace(/[<>]/g, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+=/gi, '')
-    .trim();
-}
-
-function validateName(name) {
-  return /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/.test(name);
-}
-
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-async function handleFormSubmit() {
+contactForm?.addEventListener('submit', async event => {
+  event.preventDefault();
   if (isSubmitting) return;
 
-  // Honeypot anti-spam: campo invisible para humanos, visible para bots.
-  // Si tiene contenido, es un bot rellenando el formulario automáticamente.
-  // Salimos en silencio, sin mostrar error ni avisar que fue detectado.
-  const honeypotField = document.getElementById('website');
-  if (honeypotField && honeypotField.value) {
-    return;
-  }
+  const honeypot = document.getElementById('website');
+  if (honeypot?.value) return;
 
   const now = Date.now();
-
   if (now - lastSubmission < 15000) {
-    showToast('Espera unos segundos antes de enviar otro mensaje.', 'error');
+    showStatus('Espera unos segundos antes de enviar otro mensaje.', 'error');
     return;
   }
 
-  let nombre = sanitizeInput(document.getElementById('nombre').value);
-  let apellido = sanitizeInput(document.getElementById('apellido').value);
-  let email = sanitizeInput(document.getElementById('email').value);
-  let motivo = sanitizeInput(document.getElementById('motivo').value);
-  let mensaje = sanitizeInput(document.getElementById('mensaje').value);
-
-  if (!nombre || !email || !mensaje) {
-    showToast('Completa todos los campos obligatorios.', 'error');
-    return;
-  }
-
-  if (!validateName(nombre)) {
-    showToast('Ingresa un nombre válido.', 'error');
-    return;
-  }
-
-  if (apellido && !validateName(apellido)) {
-    showToast('Ingresa un apellido válido.', 'error');
-    return;
-  }
-
-  if (!validateEmail(email)) {
-    showToast('Correo electrónico inválido.', 'error');
-    return;
-  }
-
-  if (mensaje.length < 10) {
-    showToast('El mensaje es demasiado corto.', 'error');
-    return;
-  }
-
-  if (mensaje.length > 1000) {
-    showToast('El mensaje es demasiado largo.', 'error');
-    return;
-  }
-
-  if (nombre.length > 50 || apellido.length > 50) {
-    showToast('Nombre o apellido demasiado largo.', 'error');
-    return;
-  }
-
-  const btn = document.getElementById('btnEnviar');
-
-  btn.classList.add('loading');
-  btn.disabled = true;
-  isSubmitting = true;
-
-  const templateParams = {
-    nombre,
-    apellido,
-    email,
-    motivo: motivo || 'No especificado',
-    mensaje,
-    reply_to: email
+  if (!contactForm.reportValidity()) return;
+  const fields = {
+    nombre: document.getElementById('nombre').value.trim(),
+    apellido: document.getElementById('apellido').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    motivo: document.getElementById('motivo').value,
+    mensaje: document.getElementById('mensaje').value.trim()
   };
-
-  try {
-    await emailjs.send(
-      'oasis_service',
-      'template_mldwmkr',
-      templateParams
-    );
-
-    lastSubmission = Date.now();
-
-    showToast(
-      '¡Mensaje enviado! Nos contactaremos pronto. 🙏',
-      'success'
-    );
-
-    document.getElementById('nombre').value = '';
-    document.getElementById('apellido').value = '';
-    document.getElementById('email').value = '';
-    document.getElementById('motivo').value = '';
-    document.getElementById('mensaje').value = '';
-
-  } catch (error) {
-    console.error('EmailJS Error:', error);
-
-    showToast(
-      'Ocurrió un error al enviar el mensaje.',
-      'error'
-    );
-  } finally {
-    btn.classList.remove('loading');
-    btn.disabled = false;
-    isSubmitting = false;
+  const namePattern = /^[\p{L}\p{M} .'-]{2,50}$/u;
+  if (!namePattern.test(fields.nombre) || !namePattern.test(fields.apellido)) {
+    showStatus('Revisa que tu nombre y apellido tengan entre 2 y 50 caracteres.', 'error');
+    return;
   }
-}
+  if (fields.mensaje.length < 10 || fields.mensaje.length > 1000) {
+    showStatus('El mensaje debe tener entre 10 y 1000 caracteres.', 'error');
+    return;
+  }
 
-function showToast(message, type) {
-  document.querySelector('.toast')?.remove();
-
-  const toast = document.createElement('div');
-
-  toast.className = 'toast';
-  toast.textContent = message;
-
-  Object.assign(toast.style, {
-    position: 'fixed',
-    bottom: '96px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    background: type === 'success' ? '#0B1F3A' : '#b44',
-    color: '#fff',
-    padding: '13px 28px',
-    borderRadius: '50px',
-    fontSize: '.85rem',
-    fontFamily: 'var(--font-body)',
-    zIndex: '9999',
-    boxShadow: '0 8px 28px rgba(0,0,0,.2)',
-    animation: 'fadeInUp .4s ease',
-    whiteSpace: 'nowrap'
-  });
-
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
-}
+  isSubmitting = true;
+  setSubmitting(true);
+  showStatus('', '');
+  try {
+    if (!window.emailjs?.send) throw new Error('El servicio de correo no está disponible.');
+    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      ...fields,
+      reply_to: fields.email
+    }, { publicKey: EMAILJS_PUBLIC_KEY });
+    lastSubmission = Date.now();
+    contactForm.reset();
+    showStatus('¡Mensaje enviado! Nos contactaremos pronto. 🙏', 'success');
+  } catch {
+    showStatus('No se pudo enviar automáticamente. Se abrirá un correo para que puedas enviarnos tu mensaje.', 'error');
+    openEmailDraft(fields);
+  } finally {
+    isSubmitting = false;
+    setSubmitting(false);
+  }
+});
